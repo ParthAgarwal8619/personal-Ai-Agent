@@ -5,6 +5,9 @@ from pydantic import BaseModel
 import uvicorn
 from typing import Optional, List
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from agent.graph import graph
 from langchain_core.messages import HumanMessage, AIMessage
