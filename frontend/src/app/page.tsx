@@ -44,6 +44,8 @@ const translations: Record<string, any> = {
   }
 };
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -80,7 +82,7 @@ export default function Dashboard() {
   const handleSaveSettings = async () => {
     setIsSavingSettings(true);
     try {
-      const response = await fetch('http://localhost:8000/api/settings', {
+      const response = await fetch(`${API_URL}/api/settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -111,17 +113,17 @@ export default function Dashboard() {
   // Fetch tab data when activeTab changes
   useEffect(() => {
     if (activeTab === 'calendar') {
-      fetch('http://localhost:8000/api/reminders')
+      fetch(`${API_URL}/api/reminders`)
         .then(res => res.json())
         .then(data => setRemindersData(data))
         .catch(console.error);
     } else if (activeTab === 'files') {
-      fetch('http://localhost:8000/api/files')
+      fetch(`${API_URL}/api/files`)
         .then(res => res.json())
         .then(data => setFilesData(data))
         .catch(console.error);
     } else if (activeTab === 'settings') {
-      fetch('http://localhost:8000/api/settings')
+      fetch(`${API_URL}/api/settings`)
         .then(res => res.json())
         .then(data => setSettingsData(data))
         .catch(console.error);
@@ -137,7 +139,7 @@ export default function Dashboard() {
     // Load initial chat history
     const loadHistory = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/chat/history?thread_id=dashboard_user");
+        const response = await fetch(`${API_URL}/api/chat/history?thread_id=dashboard_user`);
         if (response.ok) {
           const history = await response.json();
           if (history.length > 0) {
@@ -201,7 +203,7 @@ export default function Dashboard() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/api/upload", {
+      const response = await fetch(`${API_URL}/api/upload`, {
         method: "POST",
         body: formData,
       });
@@ -233,7 +235,7 @@ export default function Dashboard() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/chat", {
+      const response = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text, thread_id: "dashboard_user" }),
