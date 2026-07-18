@@ -44,7 +44,7 @@ const translations: Record<string, any> = {
   }
 };
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);

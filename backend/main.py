@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import uvicorn
@@ -35,7 +37,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
 
-@app.get("/")
+@app.get("/api")
 def read_root():
     return {"status": "ok", "message": "AI Personal Assistant Backend is running"}
 
@@ -202,6 +204,25 @@ def update_settings(settings: SettingsUpdate):
     os.environ["APP_LANGUAGE"] = settings.language
     
     return {"status": "success"}
+
+# Serve Frontend static files
+frontend_dir = os.path.join(os.path.dirname(__file__), "../frontend/out")
+
+@app.get("/{full_path:path}")
+async def serve_frontend(full_path: str):
+    if not full_path:
+        full_path = "index.html"
+        
+    path = os.path.join(frontend_dir, full_path)
+    if os.path.exists(path) and os.path.isfile(path):
+        return FileResponse(path)
+        
+    # Fallback to index.html for SPA routing
+    index_path = os.path.join(frontend_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+        
+    return {"error": "Frontend not built. Please run 'npm run build' in the frontend directory."}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
