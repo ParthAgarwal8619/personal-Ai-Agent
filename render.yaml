@@ -1,0 +1,21 @@
+services:
+  # Next.js Frontend
+  - type: web
+    name: ai-assistant-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+
+  # FastAPI Backend
+  - type: web
+    name: ai-assistant-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENWEATHER_API_KEY
+        sync: false
