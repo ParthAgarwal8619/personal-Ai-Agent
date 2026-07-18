@@ -21,18 +21,21 @@ class AgentState(TypedDict):
 tools = [web_search_tool, weather_tool, create_reminder_tool, read_file_tool, get_current_time_tool]
 tool_node = ToolNode(tools)
 
-# Initialize the Groq model
-llm = ChatGroq(model="llama-3.1-8b-instant", api_key=GROQ_API_KEY, temperature=0.5)
+# Initialize the Groq model (Upgraded to 70B for much smarter tool usage)
+llm = ChatGroq(model="llama3-70b-8192", api_key=GROQ_API_KEY, temperature=0.2)
 llm_with_tools = llm.bind_tools(tools)
 
 def agent_node(state: AgentState):
     messages = state["messages"]
     system_prompt = SystemMessage(
         content=(
-            "You are a helpful, professional AI Personal Assistant. "
-            "You can use tools to search the web, check weather, set reminders, and read files. "
-            "If you don't know the answer, use a tool to find out. "
-            "Always be concise and polite."
+            "You are a highly intelligent AI Personal Assistant. "
+            "You have access to tools to search Wikipedia (web_search_tool), check current weather (weather_tool), set reminders (create_reminder_tool), and read uploaded text/pdf files (read_file_tool). "
+            "IMPORTANT RULES: "
+            "1. ALWAYS use the weather_tool when asked about weather. Do NOT guess the weather. "
+            "2. ALWAYS use the create_reminder_tool when asked to set a reminder or schedule something. "
+            "3. If a user asks to summarize a file, use the read_file_tool to read it first. "
+            "4. Be concise and helpful. Never refuse to help with innocent requests."
         )
     )
     # Prefix messages with system prompt

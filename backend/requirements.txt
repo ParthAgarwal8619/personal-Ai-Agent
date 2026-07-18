@@ -8,3 +8,5 @@ pydantic
 ddgs
 httpx
 python-multipart
+wikipedia
+PyPDF2

@@ -1,15 +1,18 @@
 from langchain_core.tools import tool
-from langchain_community.tools import DuckDuckGoSearchRun
+import wikipedia
 import datetime
 import os
 import json
 
 @tool
 def web_search_tool(query: str) -> str:
-    """Search the web for information using DuckDuckGo."""
+    """Search the web for general knowledge, facts, and news using Wikipedia."""
     try:
-        search = DuckDuckGoSearchRun()
-        return search.invoke(query)
+        return wikipedia.summary(query, sentences=3)
+    except wikipedia.exceptions.DisambiguationError as e:
+        return f"Be more specific. Possible matches: {', '.join(e.options[:5])}"
+    except wikipedia.exceptions.PageError:
+        return f"No results found for '{query}' on Wikipedia."
     except Exception as e:
         return f"Error during web search: {str(e)}"
 
@@ -53,16 +56,32 @@ def create_reminder_tool(reminder: str, time: str) -> str:
 
 @tool
 def read_file_tool(filename: str) -> str:
-    """Read the contents of an uploaded file."""
+    """Read the contents of an uploaded file (supports .txt, .md, .pdf). Do not use for images."""
     filepath = os.path.join("uploads", filename)
     if not os.path.exists(filepath):
-        return f"File '{filename}' not found."
+        return f"File '{filename}' not found in the uploads directory."
+        
+    ext = os.path.splitext(filename)[1].lower()
+    
+    if ext in ['.jpg', '.jpeg', '.png', '.gif']:
+        return f"Cannot read {filename}: Vision tools are required to analyze images, which are not currently available."
+        
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
-        return f"Content of {filename}:\n{content}"
+        if ext == '.pdf':
+            import PyPDF2
+            with open(filepath, "rb") as f:
+                reader = PyPDF2.PdfReader(f)
+                text = ""
+                # Read up to first 5 pages to avoid context overflow
+                for i in range(min(len(reader.pages), 5)):
+                    text += reader.pages[i].extract_text() + "\n"
+            return f"Content of {filename}:\n{text}"
+        else:
+            with open(filepath, "r", encoding="utf-8") as f:
+                content = f.read()
+            return f"Content of {filename}:\n{content}"
     except Exception as e:
-        return f"Could not read file (might not be text): {str(e)}"
+        return f"Could not read file '{filename}': {str(e)}"
 
 @tool
 def get_current_time_tool() -> str:

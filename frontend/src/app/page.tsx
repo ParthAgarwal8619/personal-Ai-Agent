@@ -180,6 +180,21 @@ export default function Dashboard() {
     }
   }, []);
 
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // Remove any markdown before speaking
+      const cleanText = text.replace(/[*#_`]/g, '');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      // Try to find a good English voice
+      const voices = window.speechSynthesis.getVoices();
+      const voice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || voices[0];
+      if (voice) {
+          utterance.voice = voice;
+      }
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const toggleRecording = () => {
     if (!recognitionRef.current) {
       alert("Speech recognition not supported in this browser.");
@@ -246,8 +261,8 @@ export default function Dashboard() {
       const data = await response.json();
       setMessages((prev) => [...prev, { role: "bot", content: data.response }]);
       
-      // Optional TTS
-      // speakText(data.response);
+      // Play voice output
+      speakText(data.response);
       
     } catch (error) {
       console.error("Chat error:", error);
