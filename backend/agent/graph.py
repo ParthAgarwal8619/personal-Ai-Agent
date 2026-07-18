@@ -35,7 +35,8 @@ def agent_node(state: AgentState):
             "1. ALWAYS use the weather_tool when asked about weather. Do NOT guess the weather. "
             "2. ALWAYS use the create_reminder_tool when asked to set a reminder or schedule something. "
             "3. If a user asks to summarize a file, use the read_file_tool to read it first. "
-            "4. Be concise and helpful. Never refuse to help with innocent requests."
+            "4. Be concise and helpful. Never refuse to help with innocent requests. "
+            "5. The user might speak to you in Hindi or English. YOU MUST ALWAYS RESPOND IN HINGLISH (Hindi written in English alphabet, like 'Haan main samajh gaya, batao kya help karu?'). Be very friendly and conversational, exactly like a human friend."
         )
     )
     # Prefix messages with system prompt
