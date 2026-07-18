@@ -5,6 +5,6 @@ langchain-groq
 langchain-community
 python-dotenv
 pydantic
-duckduckgo-search
+ddgs
 httpx
 python-multipart
