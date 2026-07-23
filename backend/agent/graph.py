@@ -22,7 +22,7 @@ tools = [web_search_tool, weather_tool, create_reminder_tool, read_file_tool, ge
 tool_node = ToolNode(tools)
 
 # Initialize the Groq model (Upgraded to 70B for much smarter tool usage)
-llm = ChatGroq(model="llama-3.1-70b-versatile", api_key=GROQ_API_KEY, temperature=0.2)
+llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=GROQ_API_KEY, temperature=0.2)
 llm_with_tools = llm.bind_tools(tools)
 
 def agent_node(state: AgentState):
